@@ -1,0 +1,28 @@
+# ================================
+# base.html
+# ================================
+ESTRUCTURA HTML base que todas las páginas heredan
+
+CABECERA (head):
+  - Título de la página (cada página lo personaliza)
+  - Importar Tailwind CSS
+  - Importar estilos propios si los hay
+
+BARRA DE NAVEGACIÓN (navbar):
+  - Logo / nombre de la app → link a inicio
+
+  SI hay sesión activa:
+    - Mostrar nombre del usuario
+    - Link a "Mi perfil"
+    - Link a "Crear evento"
+    - Botón "Cerrar sesión"
+  SI NO hay sesión:
+    - Botón "Registrarse"
+    - Botón "Entrar"
+
+CONTENIDO PRINCIPAL:
+  - Bloque vacío que cada página rellena con su contenido
+
+PIE DE PÁGINA (footer):
+  - Nombre de la app
+  - Texto breve (ej: "Conectando arte y cultura en Paraguay")
