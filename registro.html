@@ -1,0 +1,75 @@
+# ================================
+# registro.html
+# ================================
+HEREDA de base.html
+
+FORMULARIO (envía a POST /registro):
+  - Campo: nombre (texto, obligatorio)
+  - Campo: email (texto, obligatorio)
+  - Campo: contraseña (contraseña, obligatorio)
+  - Campo: confirmar contraseña (contraseña, obligatorio)
+  - Botón "Registrarse"
+
+  SI hay error desde el backend:
+    MOSTRAR mensaje de error en rojo
+
+  Link "¿Ya tenés cuenta? Entrá acá" → link a login.html
+
+# ================================
+# login.html
+# ================================
+HEREDA de base.html
+
+FORMULARIO (envía a POST /login):
+  - Campo: email (texto, obligatorio)
+  - Campo: contraseña (contraseña, obligatorio)
+  - Botón "Entrar"
+
+  SI hay error desde el backend:
+    MOSTRAR mensaje de error en rojo
+
+  Link "¿No tenés cuenta? Registrate" → link a registro.html
+
+# ================================
+# crear_evento.html
+# ================================
+HEREDA de base.html
+
+SI no hay sesión activa → redirigir a login
+
+FORMULARIO (envía a POST /eventos/crear):
+  - Campo: título (texto, obligatorio)
+  - Campo: descripción (texto largo, obligatorio)
+  - Campo: fecha y hora del evento (fecha, obligatorio)
+  - Campo: ubicación texto (texto, obligatorio)
+  - Campo: embed de Google Maps (texto largo)
+      → instrucción visible: "Pegá acá el iframe de Google Maps"
+
+  - Botón "Crear evento"
+
+  SI hay error desde el backend:
+    MOSTRAR mensaje de error en rojo
+
+# ================================
+# calificar.html
+# ================================
+HEREDA de base.html
+
+SI no hay sesión activa → redirigir a login
+
+MOSTRAR:
+  - Nombre del usuario a calificar
+  - Nombre del evento
+
+FORMULARIO (envía a POST /calificar):
+  - Campo oculto: evaluado_id
+  - Campo oculto: evento_id
+  - Selector de estrellas: 1 a 5 (obligatorio)
+  - Botón "Enviar calificación"
+
+  SI hay error desde el backend:
+    MOSTRAR mensaje de error en rojo
+
+  SI ya calificaste a esta persona en este evento:
+    MOSTRAR "Ya calificaste a esta persona en este evento"
+    OCULTAR el formulario
