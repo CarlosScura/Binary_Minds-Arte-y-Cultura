@@ -1,4 +1,4 @@
-# ================================
+<!--#================================
 # inicio.html
 # ================================
 HEREDA de base.html
@@ -86,4 +86,61 @@ SECCIÓN EVENTOS CREADOS:
       - Link a detalle
 
   SI no creó eventos:
-    MOSTRAR "Este usuario no ha creado eventos aún"
+    MOSTRAR "Este usuario no ha creado eventos aún"-->
+<section class="bg-black text-white py-20 text-center">
+    <!-- Título principal -->
+    <h1 class="text-5xl font-bold mb-4">Arte y Cultura Paraguay</h1>
+    
+    <!-- Descripción breve -->
+    <p class="text-xl mb-6">
+        Descubrí y compartí eventos de arte y cultura en todo Paraguay.
+        Conectamos artistas, organizadores y amantes de la cultura en un solo lugar.
+    </p>
+
+    <!-- Botón -->
+    <a href="{{ url_for('eventos_lista') }}" class="bg-yellow-500 text-black font-bold py-2 px-6 rounded hover:bg-yellow-600 transition-colors">
+        Ver todos los eventos
+    </a>
+<section class="eventos-filtrados py-12 bg-gray-900 text-white">
+    <h2 class="text-3xl font-bold text-center mb-8">Eventos</h2>
+
+    <div class="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+        {% if eventos %}
+            {% for evento in eventos %}
+                <div class="bg-gray-800 p-6 rounded shadow hover:shadow-lg transition-shadow">
+                    <!-- Título -->
+                    <h3 class="text-xl font-bold mb-2">{{ evento.titulo }}</h3>
+
+                    <!-- Fecha -->
+                    <p class="mb-1">📅 {{ evento.fecha }}</p>
+
+                    <!-- Estado con color -->
+                    <p class="mb-3">
+                        Estado: 
+                        <span class="{% if evento.estado=='proximo' %}text-green-500{% elif evento.estado=='pasado' %}text-gray-400{% elif evento.estado=='cancelado' %}text-red-500{% endif %}">
+                            {{ evento.estado|capitalize }}
+                        </span>
+                    </p>
+
+                    <!-- Botón Ver detalle -->
+                    <a href="{{ url_for('evento_detalle', id=evento.id) }}" class="bg-yellow-500 text-black px-3 py-2 rounded hover:bg-yellow-600 transition-colors">
+                        Ver detalle
+                    </a>
+                </div>
+            {% endfor %}
+        {% else %}
+            <!-- Mensaje si no hay eventos según filtro -->
+            <p class="col-span-3 text-center text-gray-400">
+                {% if filtro=='proximo' %}
+                    No hay eventos próximos por ahora.
+                {% elif filtro=='pasado' %}
+                    No hay eventos pasados.
+                {% elif filtro=='cancelado' %}
+                    No hay eventos cancelados.
+                {% else %}
+                    No hay eventos para mostrar.
+                {% endif %}
+            </p>
+        {% endif %}
+    </div>
+</section>
