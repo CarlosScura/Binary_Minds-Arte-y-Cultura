@@ -11,7 +11,7 @@ CLASE Usuario (tabla: "usuarios"):
   - nombre          → texto, obligatorio
   - email           → texto, obligatorio, único
   - contraseña      → texto, obligatorio
-  - rol             → texto, obligatorio ("organizador" | "artista" | "participante")
+  - puntuacion_promedio → número decimal, default 0
   - fecha_creacion  → fecha, se pone automáticamente al crear
 
 # ================================
@@ -25,8 +25,8 @@ CLASE Evento (tabla: "eventos"):
   - ubicacion_texto  → texto
   - embed_mapa       → texto largo (guarda el iframe de Google Maps)
   - estado           → texto ("proximo" | "pasado" | "cancelado")
-  - fecha_expiracion → fecha (calculada automáticamente: fecha_evento + 3 meses)
-  - organizador_id   → número entero, clave foránea → apunta a Usuario.id
+  - fecha_expiracion → fecha (calculada: fecha_evento + 3 meses)
+  - creador_id       → número entero, clave foránea → apunta a Usuario.id
 
 # ================================
 # MODELO: Calificacion
@@ -34,7 +34,6 @@ CLASE Evento (tabla: "eventos"):
 CLASE Calificacion (tabla: "calificaciones"):
   - id           → número entero, clave primaria
   - puntuacion   → número entero (1 al 5), obligatorio
-  - tipo         → texto ("a_artista" | "a_organizador")
   - evaluado_id  → número entero, clave foránea → apunta a Usuario.id
   - evaluador_id → número entero, clave foránea → apunta a Usuario.id
   - evento_id    → número entero, clave foránea → apunta a Evento.id
