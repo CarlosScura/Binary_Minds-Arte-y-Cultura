@@ -21,7 +21,7 @@ RUTA obtener_eventos():
 # ================================
 RUTA obtener_evento(id):
   BUSCAR evento por id
-  SI no existe → devolver error 404
+  SI no existe → error 404
   DEVOLVER detalle del evento (incluye embed_mapa)
 
 # ================================
@@ -29,7 +29,6 @@ RUTA obtener_evento(id):
 # ================================
 RUTA crear_evento():
   SI no hay sesión activa → redirigir a login
-  SI rol del usuario NO es "organizador" → error 403
 
   RECIBIR datos del formulario:
     - titulo, descripcion, fecha_evento
@@ -38,6 +37,7 @@ RUTA crear_evento():
   CALCULAR fecha_expiracion = fecha_evento + 3 meses
 
   CREAR nuevo Evento con estado "proximo"
+  ASIGNAR creador_id = usuario en sesión
   GUARDAR en base de datos
   REDIRIGIR al detalle del evento creado
 
@@ -48,7 +48,7 @@ RUTA cancelar_evento(id):
   SI no hay sesión activa → redirigir a login
   
   BUSCAR evento por id
-  SI el organizador_id != usuario en sesión → error 403
+  SI el creador_id != usuario en sesión → error 403
   
   CAMBIAR estado a "cancelado"
   GUARDAR cambios
