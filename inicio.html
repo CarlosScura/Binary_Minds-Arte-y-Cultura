@@ -1,0 +1,89 @@
+# ================================
+# inicio.html
+# ================================
+HEREDA de base.html
+
+SECCIÓN HERO:
+  - Título principal de la app
+  - Descripción breve de qué es la plataforma
+  - Botón "Ver todos los eventos"
+
+SECCIÓN EVENTOS PRÓXIMOS:
+  PARA cada evento en la lista (solo estado "proximo"):
+    MOSTRAR tarjeta con:
+      - Título del evento
+      - Fecha
+      - Ubicación texto
+      - Botón "Ver detalle" → link a evento_detalle.html
+
+  SI no hay eventos próximos:
+    MOSTRAR mensaje "No hay eventos próximos por ahora"
+
+# ================================
+# eventos_lista.html
+# ================================
+HEREDA de base.html
+
+SECCIÓN FILTROS:
+  - Botón "Próximos"
+  - Botón "Pasados"
+  - Botón "Cancelados"
+  - El botón activo se ve resaltado
+
+SECCIÓN LISTA:
+  PARA cada evento filtrado:
+    MOSTRAR tarjeta con:
+      - Título
+      - Fecha
+      - Estado (con color diferente según estado)
+      - Botón "Ver detalle"
+
+  SI no hay eventos:
+    MOSTRAR mensaje según el filtro activo
+
+# ================================
+# evento_detalle.html
+# ================================
+HEREDA de base.html
+
+SECCIÓN DETALLE:
+  - Título del evento
+  - Estado del evento (con color)
+  - Fecha y hora
+  - Descripción completa
+  - Ubicación texto
+  - Embed de Google Maps (mostrar el iframe recibido desde backend)
+  - Nombre del creador → link a su perfil
+
+SECCIÓN ARTISTAS / PARTICIPANTES:
+  - Título "Creado por:"
+  - Nombre del creador con link a perfil
+
+SECCIÓN CALIFICAR:
+  SI hay sesión activa Y estado del evento == "pasado":
+    - Mostrar botón "Calificar al organizador"
+    → link a formulario de calificación
+
+  SI no hay sesión:
+    - Mostrar "Iniciá sesión para calificar"
+
+# ================================
+# perfil_usuario.html
+# ================================
+HEREDA de base.html
+
+SECCIÓN PERFIL:
+  - Nombre del usuario
+  - Puntuación promedio con estrellas ⭐
+  - Fecha de registro
+
+SECCIÓN EVENTOS CREADOS:
+  PARA cada evento creado por este usuario:
+    MOSTRAR tarjeta con:
+      - Título
+      - Fecha
+      - Estado
+      - Link a detalle
+
+  SI no creó eventos:
+    MOSTRAR "Este usuario no ha creado eventos aún"
