@@ -3,10 +3,12 @@
 
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from flask_bcrypt import Bcrypt # <--- AGREGAR ESTO
 
 # INICIALIZAR la base de datos (objeto db)
 
 db = SQLAlchemy()
+bcrypt = Bcrypt() # <--- INICIALIZAR BCrypt aquí
 
 # ================================
 # MODELO: Usuario
@@ -28,6 +30,16 @@ class Usuario(db.Model):
     contraseña          = db.Column(db.String(256), nullable=False)
     puntuacion_promedio = db.Column(db.Float, default=0.0)
     fecha_creacion      = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # --- AGREGAR ESTOS MÉTODOS O TU AUTH NO FUNCIONARÁ ---
+    def set_password(self, password):
+        """Hashea la contraseña y la guarda en el campo 'contraseña'"""
+        self.contraseña = bcrypt.generate_password_hash(password).decode('utf-8')
+
+    def check_password(self, password):
+        """Compara la contraseña ingresada con el hash guardado"""
+        return bcrypt.check_password_hash(self.contraseña, password)
+    # -----------------------------------------------------
 
     # Eventos que este usuario creó
     eventos_creados = db.relationship('Evento', backref='creador', lazy=True)
