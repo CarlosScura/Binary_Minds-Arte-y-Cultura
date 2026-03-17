@@ -1,0 +1,203 @@
+<!--
+
+# ================================
+# evento_detalle.html
+# ================================
+HEREDA de base.html
+
+SECCIÓN DETALLE:
+  - Título del evento
+  - Estado del evento (con color)
+  - Fecha y hora
+  - Descripción completa
+  - Ubicación texto
+  - Embed de Google Maps (mostrar el iframe recibido desde backend)
+  - Nombre del creador → link a su perfil
+
+SECCIÓN ARTISTAS / PARTICIPANTES:
+  - Título "Creado por:"
+  - Nombre del creador con link a perfil
+
+SECCIÓN CALIFICAR:
+  SI hay sesión activa Y estado del evento == "pasado":
+    - Mostrar botón "Calificar al organizador"
+    → link a formulario de calificación
+
+  SI no hay sesión:
+    - Mostrar "Iniciá sesión para calificar"
+
+-->
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="max-w-3xl mx-auto py-6 space-y-6">
+
+  <!-- ==================== DETALLE DEL EVENTO ==================== -->
+  <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 shadow-lg">
+
+    <!-- Título + Estado -->
+    <div class="flex flex-wrap justify-between items-start gap-3 mb-4">
+      <h1 class="text-2xl font-bold text-white leading-snug">{{ evento.titulo }}</h1>
+
+      {% if evento.estado == 'proximo' %}
+        <span class="text-xs font-semibold px-3 py-1 rounded-full bg-blue-500/30 text-blue-200 border border-blue-400/40">
+          🕐 Próximo
+        </span>
+      {% elif evento.estado == 'pasado' %}
+        <span class="text-xs font-semibold px-3 py-1 rounded-full bg-gray-500/30 text-gray-200 border border-gray-400/40">
+          ✅ Pasado
+        </span>
+      {% elif evento.estado == 'cancelado' %}
+        <span class="text-xs font-semibold px-3 py-1 rounded-full bg-red-500/30 text-red-200 border border-red-400/40">
+          ❌ Cancelado
+        </span>
+      {% endif %}
+    </div>
+
+    <!-- Fecha y hora -->
+    <div class="flex items-center gap-2 text-white/70 text-sm mb-3">
+      <i class="fa-regular fa-calendar"></i>
+      <span>{{ evento.fecha_evento.strftime('%d de %B de %Y · %H:%M hs') }}</span>
+    </div>
+
+    <!-- Ubicación -->
+    {% if evento.ubicacion_texto %}
+    <div class="flex items-center gap-2 text-white/70 text-sm mb-4">
+      <i class="fa-solid fa-location-dot"></i>
+      <span>{{ evento.ubicacion_texto }}</span>
+    </div>
+    {% endif %}
+
+    <!-- Descripción -->
+    {% if evento.descripcion %}
+    <p class="text-white/90 text-sm leading-relaxed border-t border-white/10 pt-4 mt-2">
+      {{ evento.descripcion }}
+    </p>
+    {% endif %}
+
+  </div>
+
+  <!-- ==================== MAPA ==================== -->
+  {% if evento.embed_mapa %}
+  <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl overflow-hidden shadow-lg">
+    <div class="px-5 py-3 border-b border-white/10">
+      <p class="text-white/60 text-xs font-semibold uppercase tracking-widest">
+        <i class="fa-solid fa-map-location-dot mr-1"></i> Ubicación en el mapa
+      </p>
+    </div>
+    <div class="w-full h-64">
+      <!-- El iframe viene directo del backend, se renderiza con |safe -->
+      {{ evento.embed_mapa | safe }}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ==================== CREADOR ==================== -->
+  <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-5 shadow-lg">
+    <p class="text-white/50 text-xs font-semibold uppercase tracking-widest mb-3">
+      <i class="fa-solid fa-user mr-1"></i> Creado por
+    </p>
+    <a href="{{ url_for('usuarios.obtener_perfil', id=evento.creador_id) }}"
+       class="flex items-center gap-3 group w-fit">
+      <!-- Avatar con iniciales -->
+      <div class="w-10 h-10 rounded-full bg-indigo-500/40 border border-indigo-400/40
+                  flex items-center justify-center text-white font-semibold text-sm">
+        {{ evento.creador.nombre[:2].upper() }}
+      </div>
+      <div>
+        <p class="text-white font-medium group-hover:underline">{{ evento.creador.nombre }}</p>
+        {% if evento.creador.puntuacion_promedio > 0 %}
+          <p class="text-yellow-400 text-xs">
+            ⭐ {{ "%.1f"|format(evento.creador.puntuacion_promedio) }} puntuación
+          </p>
+        {% else %}
+          <p class="text-white/40 text-xs">Sin calificaciones aún</p>
+        {% endif %}
+      </div>
+      <i class="fa-solid fa-arrow-right text-white/30 group-hover:text-white/70 transition ml-2 text-xs"></i>
+    </a>
+  </div>
+
+  <!-- ==================== SECCIÓN CALIFICAR ==================== -->
+  <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-5 shadow-lg">
+    <p class="text-white/50 text-xs font-semibold uppercase tracking-widest mb-4">
+      <i class="fa-solid fa-star mr-1"></i> Calificaciones
+    </p>
+
+    {% if evento.estado == 'pasado' %}
+
+      {% if session.get('usuario_id') %}
+
+        {% if session.get('usuario_id') != evento.creador_id %}
+          <!-- Usuario logueado, evento pasado, no es el creador → puede calificar -->
+          <a href="{{ url_for('usuarios.calificar') }}?evaluado_id={{ evento.creador_id }}&evento_id={{ evento.id }}"
+             class="inline-flex items-center gap-2 bg-yellow-500 hover:bg-yellow-400
+                    text-black font-semibold px-5 py-2.5 rounded-full transition duration-200">
+            <i class="fa-solid fa-star"></i>
+            Calificar al organizador
+          </a>
+          <p class="text-white/40 text-xs mt-2">
+            Podés calificar a {{ evento.creador.nombre }} por este evento.
+          </p>
+
+        {% else %}
+          <!-- Es el creador del evento -->
+          <p class="text-white/50 text-sm">
+            <i class="fa-solid fa-circle-info mr-1"></i>
+            No podés calificarte a vos mismo.
+          </p>
+        {% endif %}
+
+      {% else %}
+        <!-- No hay sesión activa -->
+        <div class="flex items-center justify-between flex-wrap gap-3">
+          <p class="text-white/60 text-sm">
+            <i class="fa-solid fa-lock mr-1"></i>
+            Iniciá sesión para calificar al organizador.
+          </p>
+          <a href="{{ url_for('auth.mostrar_login') }}"
+             class="inline-flex items-center gap-2 bg-yellow-500 hover:bg-yellow-400
+                    text-black font-semibold px-4 py-2 rounded-full transition duration-200 text-sm">
+            <i class="fa-solid fa-arrow-right-to-bracket"></i>
+            Iniciar sesión
+          </a>
+        </div>
+      {% endif %}
+
+    {% elif evento.estado == 'proximo' %}
+      <!-- Evento todavía no ocurrió -->
+      <p class="text-white/50 text-sm">
+        <i class="fa-regular fa-clock mr-1"></i>
+        Podrás calificar al organizador cuando el evento haya ocurrido.
+      </p>
+
+    {% elif evento.estado == 'cancelado' %}
+      <!-- Evento cancelado -->
+      <p class="text-white/50 text-sm">
+        <i class="fa-solid fa-ban mr-1"></i>
+        Este evento fue cancelado, no se puede calificar.
+      </p>
+    {% endif %}
+
+  </div>
+
+  <!-- ==================== BOTÓN CANCELAR (solo el creador) ==================== -->
+  {% if session.get('usuario_id') == evento.creador_id and evento.estado != 'cancelado' %}
+  <div class="flex justify-end">
+    <form action="{{ url_for('eventos.cancelar_evento', id=evento.id) }}" method="POST"
+          onsubmit="return confirm('¿Seguro que querés cancelar este evento?')">
+      <button type="submit"
+              class="inline-flex items-center gap-2 bg-red-600/80 hover:bg-red-600
+                     text-white px-4 py-2 rounded-full transition duration-200 text-sm">
+        <i class="fa-solid fa-ban"></i>
+        Cancelar evento
+      </button>
+    </form>
+  </div>
+  {% endif %}
+
+</div>
+
+{% endblock %}
