@@ -1,4 +1,4 @@
-# ================================
+<!--#================================
 # inicio.html
 # ================================
 HEREDA de base.html
@@ -86,4 +86,115 @@ SECCIÓN EVENTOS CREADOS:
       - Link a detalle
 
   SI no creó eventos:
-    MOSTRAR "Este usuario no ha creado eventos aún"
+    MOSTRAR "Este usuario no ha creado eventos aún"-->
+
+ <!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arte y Cultura Paraguay</title>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<style>
+  body {
+    background-image: url(imagDisenio/fondo.png);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  /* Fondo oscuro semi-transparente para el contenido */
+  .bg-overlay {
+    background-color: rgba(0,0,0,0.7);
+  }
+</style>
+</head>
+<body class="text-white">
+
+<!-- NAVBAR -->
+<nav class="bg-overlay p-4 flex justify-between items-center">
+  <div class="flex items-center gap-2">
+    <div class="bg-white text-black w-8 h-8 flex items-center justify-center rounded-full" >
+        <img src="imagDisenio/logo-cultura.jpg" alt="logo">
+    </div>> 
+    </div>
+    <span class="font-bold text-lg">Arte y Cultura Paraguay</span>
+  </div>
+  <div id="nav"></div>
+</nav>
+
+<!-- HERO -->
+<section class="bg-overlay p-10 rounded mb-6 text-center">
+  <h1 class="text-4xl font-bold mb-2">Arte y Cultura Paraguay</h1>
+  <p class="text-gray-300 mb-4"> Conectamos Artistas y Eventos Culturales de Todo Paraguay.</p>
+  <a href="#eventos-proximos" class="bg-blue-500 px-4 py-2 rounded text-black">Ver todos los eventos</a>
+</section>
+
+<!-- EVENTOS PRÓXIMOS -->
+<section id="eventos-proximos" class="p-6 bg-overlay rounded">
+  <h2 class="text-2xl font-bold mb-4" class= "imgDisenioz">Eventos Próximos</h2>
+  <div id="lista-proximos" class="grid md:grid-cols-3 gap-4"></div>
+</section>
+
+<!-- FOOTER -->
+<footer class="bg-overlay text-center p-4 mt-10 text-gray-400 rounded">
+  <p class="font-bold">Arte y Cultura Paraguay</p>
+  <p> © Conectando el arte y la cultura en Paraguay</p>
+</footer>
+
+<script>
+// ================= NAV =================
+function renderNav(){
+  let nav = document.getElementById("nav");
+  let user = localStorage.getItem("usuario");
+  nav.innerHTML = user ? `
+    <span>${user}</span>
+    <button onclick="logout()" class="bg-red-500 px-2 rounded ml-2">Salir</button>
+  ` : `<button onclick="login()" class="bg-white text-black px-2 rounded">Entrar</button>`;
+}
+function login(){ localStorage.setItem("usuario","Carlos"); renderNav(); }
+function logout(){ localStorage.removeItem("usuario"); renderNav(); }
+renderNav();
+
+// ================= EVENTOS FICTICIOS =================
+const eventos = [
+  { id:1, titulo:"Festival de Música Guaraní", fecha:"2026-03-25", ubicacion:"Asunción", descripcion:"Música tradicional paraguaya", imagen:"/imagDisenio/festival-guarani.jpeg" },
+  { id:2, titulo:"Expo Arte Joven", fecha:"2026-03-18", ubicacion:"Ciudad del Este", descripcion:"Exposición de artistas emergentes", imagen:"/imagDisenio/expo-arte.jpg"},
+  { id:3, titulo:"Feria Cultural", fecha:"2026-02-20", ubicacion:"Encarnación", descripcion:"Cultura y gastronomía", imagen:"https://picsum.photos/400/300?3" },
+  { id:4, titulo:"Teatro al Aire Libre", fecha:"2026-03-30", ubicacion:"Luque", descripcion:"Obra teatral en vivo", imagen:"/imagDisenio/teatro-libre.jpeg" }
+];
+
+// ================= FUNCIONES =================
+function getEstado(fecha){ return new Date(fecha) >= new Date() ? "Próximo":"Pasado"; }
+
+function mostrarProximos(){
+  const cont = document.getElementById("lista-proximos");
+  const proximos = eventos.filter(e => getEstado(e.fecha) === "Próximo");
+
+  if(proximos.length===0){
+    cont.innerHTML='<p class="text-gray-400 col-span-3">No hay eventos próximos por ahora.</p>';
+    return;
+  }
+
+  proximos.sort((a,b) => new Date(a.fecha)-new Date(b.fecha));
+
+  proximos.forEach(e=>{
+    cont.innerHTML += `
+      <div class="bg-gray-800 rounded shadow overflow-hidden">
+        <img src="${e.imagen}" alt="${e.titulo}" class="h-40 w-full object-cover">
+        <div class="p-4">
+          <h3 class="text-xl font-bold">${e.titulo}</h3>
+          <p class="text-gray-300">${e.fecha}</p>
+          <p class="text-gray-300">${e.ubicacion}</p>
+          <a href="evento_detalle.html?id=${e.id}" class="mt-2 inline-block bg-blue-500 px-4 py-2 rounded text-black">Ver detalle</a>
+        </div>
+      </div>
+    `;
+  });
+}
+
+// Mostrar al cargar
+mostrarProximos();
+</script>
+
+</body>
+</html>
