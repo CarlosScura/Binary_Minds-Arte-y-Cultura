@@ -170,10 +170,7 @@ def calificar():
 
     evaluado = Usuario.query.get(evaluado_id)
 
-    todas_las_calificaciones = Calificacion.query.filter_by(evaluado_id=evaluado_id).all()
-    total    = sum(c.puntuacion for c in todas_las_calificaciones)
-    promedio = round(total / len(todas_las_calificaciones), 2)
-    evaluado.puntuacion_promedio = promedio
+    evaluado.recalcular_promedio()
 
     # Guardar todo
     db.session.commit()
