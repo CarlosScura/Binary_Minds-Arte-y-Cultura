@@ -2,6 +2,10 @@
 
 from flask import Flask
 
+# importar bcrypt
+
+from models import db, bcrypt
+
 # IMPORTAR la base de datos (db)
 
 from models import db
@@ -39,6 +43,7 @@ def create_app():
 # INICIALIZAR db con la app
 
     db.init_app(app)
+    bcrypt.init_app(app)
 
 # ================================
 # REGISTRAR BLUEPRINTS
