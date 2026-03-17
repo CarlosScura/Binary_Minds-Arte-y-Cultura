@@ -109,7 +109,7 @@ def calificar():
     
     # Verificar sesión activa
 
-    if 'user_id' not in session:
+    if 'usuario_id' not in session:
         return redirect(url_for('auth.login'))  # ← coordiná el nombre con el módulo Auth
 
     # Recibir datos del formulario HTML
@@ -130,7 +130,7 @@ def calificar():
 
     # No podés calificarte a vos mismo
 
-    if session['user_id'] == evaluado_id:
+    if session['usuario_id'] == evaluado_id:
         return jsonify({'error': 'No podés calificarte a vos mismo'}), 400
 
     # Buscar el evento
@@ -147,7 +147,7 @@ def calificar():
     # Verificar que no haya calificado antes a esta persona en este evento
 
     ya_califico = Calificacion.query.filter_by(
-        evaluador_id = session['user_id'],
+        evaluador_id = session['usuario_id'],
         evaluado_id  = evaluado_id,
         evento_id    = evento_id
     ).first()
@@ -160,7 +160,7 @@ def calificar():
     nueva_calificacion = Calificacion(
         puntuacion   = puntuacion,
         evaluado_id  = evaluado_id,
-        evaluador_id = session['user_id'],
+        evaluador_id = session['usuario_id'],
         evento_id    = evento_id
     )
     db.session.add(nueva_calificacion)
