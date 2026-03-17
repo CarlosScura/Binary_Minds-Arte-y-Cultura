@@ -1,0 +1,96 @@
+<!--# evento_detalle.html
+# ================================
+HEREDA de base.html
+
+SECCIÓN DETALLE:
+  - Título del evento
+  - Estado del evento (con color)
+  - Fecha y hora
+  - Descripción completa
+  - Ubicación texto
+  - Embed de Google Maps (mostrar el iframe recibido desde backend)
+  - Nombre del creador → link a su perfil
+
+SECCIÓN ARTISTAS / PARTICIPANTES:
+  - Título "Creado por:"
+  - Nombre del creador con link a perfil
+
+SECCIÓN CALIFICAR:
+  SI hay sesión activa Y estado del evento == "pasado":
+    - Mostrar botón "Calificar al organizador"
+    → link a formulario de calificación
+
+  SI no hay sesión:
+    - Mostrar "Iniciá sesión para calificar"-->
+
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Evento - Cultura Py</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        body { background-image: url(imagDisenio/background.jpg); background-size: cover; background-attachment: fixed; }
+        .bg-overlay { background-color: rgba(0,0,0,0.8); }
+    </style>
+</head>
+<body class="text-white">
+
+<nav class="bg-overlay p-4 flex items-center gap-4">
+    <a href="inicio.html" class="bg-gray-700 px-3 py-1 rounded text-sm">← Volver</a>
+    <span class="font-bold">Detalles del Evento</span>
+</nav>
+
+<main class="p-6 max-w-4xl mx-auto">
+    <div id="detalle-evento" class="bg-overlay p-8 rounded-xl shadow-2xl border border-gray-700">
+        <p class="text-center">Cargando detalles...</p>
+    </div>
+</main>
+
+<script>
+    // LISTA DE EVENTOS (Debe ser la misma que en inicio.html o venir de una base de datos)
+    const eventos = [
+        { id:1, titulo:"Festival de Música Guaraní", fecha:"2026-03-25", ubicacion:"Asunción", descripcion:"Una noche mágica con las mejores arpas del país y grupos folclóricos destacados.", imagen:"/imagDisenio/festival-guarani.jpeg" },
+        { id:2, titulo:"Expo Arte Joven", fecha:"2026-03-18", ubicacion:"Ciudad del Este", descripcion:"Galería abierta con obras de los talentos más prometedores de la región Este.", imagen:"/imagDisenio/expo-arte.jpg"},
+        { id:3, titulo:"Feria Cultural", fecha:"2026-02-20", ubicacion:"Encarnación", descripcion:"Gastronomía, danza y artesanía frente a la costanera.", imagen:"https://picsum.photos/400/300?3" },
+        { id:4, titulo:"Teatro al Aire Libre", fecha:"2026-03-30", ubicacion:"Luque", descripcion:"Obra teatral clásica representada bajo las estrellas.", imagen:"/imagDisenio/teatro-libre.jpeg" }
+    ];
+
+    function cargarDetalle() {
+        // 1. Obtener el ID de la URL (?id=1)
+        const params = new URLSearchParams(window.location.search);
+        const idEvento = parseInt(params.get("id"));
+
+        // 2. Buscar el evento en el array
+        const evento = eventos.find(e => e.id === idEvento);
+        const contenedor = document.getElementById("detalle-evento");
+
+        if (evento) {
+            contenedor.innerHTML = `
+                <img src="${evento.imagen}" class="w-full h-64 object-cover rounded-lg mb-6 shadow-lg">
+                <h1 class="text-4xl font-bold mb-2">${evento.titulo}</h1>
+                <div class="flex gap-4 mb-6 text-blue-400 font-semibold">
+                    <span>📅 ${evento.fecha}</span>
+                    <span>📍 ${evento.ubicacion}</span>
+                </div>
+                <p class="text-gray-300 text-lg leading-relaxed mb-8">${evento.descripcion}</p>
+                
+                <div class="border-t border-gray-700 pt-6">
+                    <h3 class="font-bold mb-4 italic">Mapa de Ubicación:</h3>
+                    <div class="bg-gray-800 h-48 rounded flex items-center justify-center text-gray-500">
+                        [Aquí iría el Google Maps Iframe]
+                    </div>
+                </div>
+            `;
+        } else {
+            contenedor.innerHTML = `<h1 class="text-2xl text-center">Evento no encontrado.</h1>`;
+        }
+    }
+
+    cargarDetalle();
+</script>
+</body>
+</html>
