@@ -1,0 +1,209 @@
+<!-- # eventos_lista.html
+# ================================
+HEREDA de base.html
+
+SECCIÓN FILTROS:
+  - Botón "Próximos"
+  - Botón "Pasados"
+  - Botón "Cancelados"
+  - El botón activo se ve resaltado
+
+SECCIÓN LISTA:
+  PARA cada evento filtrado:
+    MOSTRAR tarjeta con:
+      - Título
+      - Fecha
+      - Estado (con color diferente según estado)
+      - Botón "Ver detalle"
+
+  SI no hay eventos:
+    MOSTRAR mensaje según el filtro activo -->
+ <!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arte y Cultura Paraguay</title>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<style>
+  body {
+    background-image: url(imagDisenio/background.jpg);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+  .bg-overlay { background-color: rgba(0,0,0,0.8); }
+</style>
+</head>
+<body class="text-white">
+
+<nav class="bg-overlay p-4 flex justify-between items-center sticky top-0 z-50">
+  <div class="flex items-center gap-2">
+    <div class="bg-white text-black w-10 h-10 flex items-center justify-center rounded-full overflow-hidden">
+        <img src="imagDisenio/logo-cultura.jpg" alt="logo" class="object-cover h-full w-full">
+    </div>
+    <span class="font-bold text-lg">Arte y Cultura Paraguay</span>
+  </div>
+  <div id="nav" class="flex items-center gap-4"></div>
+</nav>
+
+<section id="seccion-perfil" class="p-6 bg-overlay rounded-xl mx-4 mt-4 hidden border border-gray-700">
+    <div class="flex flex-col md:flex-row items-center gap-6">
+        <div class="w-24 h-24 bg-blue-600 rounded-full flex items-center justify-center text-3xl font-bold" id="perfil-inicial"></div>
+        <div class="text-center md:text-left">
+            <h2 id="perfil-nombre" class="text-3xl font-bold"></h2>
+            <p id="perfil-estrellas" class="text-yellow-400 text-xl"></p>
+            <p id="perfil-registro" class="text-gray-400 text-sm"></p>
+        </div>
+    </div>
+    <div class="mt-8">
+        <h3 class="text-xl font-bold mb-4 border-b border-gray-700 pb-2">Mis Eventos Creados</h3>
+        <div id="lista-creados" class="grid md:grid-cols-2 gap-4"></div>
+    </div>
+</section>
+
+<section id="hero" class="bg-overlay p-10 rounded mb-6 text-center mx-4 mt-4">
+  <h1 class="text-4xl font-bold mb-2">Arte y Cultura Paraguay</h1>
+  <p class="text-gray-300 mb-4"> Conectamos Artistas y Eventos Culturales de Todo Paraguay.</p>
+  <button onclick="mostrarTodos()" class="bg-blue-500 hover:bg-blue-600 px-6 py-2 rounded text-black font-bold transition">
+      Ver todos los eventos
+  </button>
+</section>
+
+<section id="eventos-seccion" class="p-6 bg-overlay rounded mx-4">
+  <h2 id="titulo-lista" class="text-2xl font-bold mb-4">Eventos Próximos</h2>
+  <div id="lista-eventos" class="grid md:grid-cols-3 gap-4"></div>
+</section>
+
+<footer class="bg-overlay text-center p-4 mt-10 text-gray-400 rounded mx-4">
+  <p class="font-bold text-white">Arte y Cultura Paraguay</p>
+  <p>© 2026 - Conectando el arte y la cultura en Paraguay</p>
+</footer>
+
+<script>
+// ================= DATOS =================
+const eventos = [
+  { id:1, titulo:"Festival de Música Guaraní", fecha:"2026-03-25", ubicacion:"Asunción", imagen:"/imagDisenio/festival-guarani.jpeg", creador: "Carlos" },
+  { id:2, titulo:"Expo Arte Joven", fecha:"2026-03-18", ubicacion:"Ciudad del Este", imagen:"/imagDisenio/expo-arte.jpg", creador: "Carlos" },
+  { id:3, titulo:"Feria Cultural", fecha:"2026-02-20", ubicacion:"Encarnación", imagen:"https://picsum.photos/400/300?3", creador: "Admin" },
+  { id:4, titulo:"Teatro al Aire Libre", fecha:"2026-03-30", ubicacion:"Luque", imagen:"/imagDisenio/teatro-libre.jpeg", creador: "Marta" }
+];
+
+const datosUsuario = {
+    nombre: "Carlos",
+    puntuacion: 4.5,
+    registro: "15 de Enero, 2025"
+};
+
+// ================= LÓGICA NAV Y PERFIL =================
+function renderNav(){
+  let nav = document.getElementById("nav");
+  let user = localStorage.getItem("usuario");
+  
+  if(user) {
+      nav.innerHTML = `<span>Bienvenido, <b>${user}</b></span>
+                       <button onclick="logout()" class="bg-red-500 px-3 py-1 rounded text-sm">Salir</button>`;
+      renderPerfil();
+  } else {
+      nav.innerHTML = `<button onclick="login()" class="bg-white text-black px-4 py-1 rounded font-bold">Entrar</button>`;
+      document.getElementById("seccion-perfil").classList.add("hidden");
+  }
+}
+
+function login(){ 
+    localStorage.setItem("usuario", datosUsuario.nombre); 
+    renderNav(); 
+}
+
+function logout(){ 
+    localStorage.removeItem("usuario"); 
+    renderNav(); 
+}
+
+function renderPerfil() {
+    const sec = document.getElementById("seccion-perfil");
+    sec.classList.remove("hidden");
+    
+    document.getElementById("perfil-nombre").innerText = datosUsuario.nombre;
+    document.getElementById("perfil-inicial").innerText = datosUsuario.nombre[0];
+    document.getElementById("perfil-registro").innerText = "Miembro desde: " + datosUsuario.registro;
+    
+    // Estrellas
+    let estrellas = "";
+    for(let i=1; i<=5; i++) estrellas += i <= datosUsuario.puntuacion ? "⭐" : "☆";
+    document.getElementById("perfil-estrellas").innerText = estrellas;
+
+    // Eventos creados por este usuario
+    const creados = eventos.filter(e => e.creador === datosUsuario.nombre);
+    const cont = document.getElementById("lista-creados");
+    
+    if(creados.length === 0) {
+        cont.innerHTML = "<p class='text-gray-500'>Este usuario no ha creado eventos aún.</p>";
+    } else {
+        cont.innerHTML = creados.map(e => `
+            <div class="bg-gray-800 p-3 rounded flex justify-between items-center border border-gray-700">
+                <div>
+                    <h4 class="font-bold">${e.titulo}</h4>
+                    <p class="text-xs text-gray-400">${e.fecha} - <span class="text-blue-400">${getEstado(e.fecha)}</span></p>
+                </div>
+                <a href="evento_detalle.html?id=${e.id}" class="text-sm bg-gray-700 px-2 py-1 rounded">Detalle</a>
+            </div>
+        `).join('');
+    }
+}
+
+// ================= LÓGICA EVENTOS =================
+function getEstado(fecha){ 
+    const hoy = new Date();
+    hoy.setHours(0,0,0,0);
+    return new Date(fecha) >= hoy ? "Próximo" : "Pasado"; 
+}
+
+function renderEventos(lista, titulo) {
+    document.getElementById("titulo-lista").innerText = titulo;
+    const cont = document.getElementById("lista-eventos");
+    cont.innerHTML = "";
+
+    if(lista.length === 0) {
+        cont.innerHTML = '<p class="text-gray-400 col-span-3 text-center py-10">No hay eventos para mostrar.</p>';
+        return;
+    }
+
+    lista.forEach(e => {
+        const estado = getEstado(e.fecha);
+        cont.innerHTML += `
+          <div class="bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-gray-700 hover:border-blue-500 transition">
+            <img src="${e.imagen}" alt="${e.titulo}" class="h-40 w-full object-cover">
+            <div class="p-4">
+              <div class="flex justify-between items-start mb-2">
+                  <h3 class="text-xl font-bold">${e.titulo}</h3>
+                  <span class="text-[10px] px-2 py-1 rounded bg-gray-700 text-blue-300 font-bold">${estado.toUpperCase()}</span>
+              </div>
+              <p class="text-gray-400 text-sm">📅 ${e.fecha}</p>
+              <p class="text-gray-400 text-sm mb-4">📍 ${e.ubicacion}</p>
+              <a href="evento_detalle.html?id=${e.id}" class="block text-center bg-blue-500 hover:bg-blue-600 text-black font-bold py-2 rounded transition">Ver detalle</a>
+            </div>
+          </div>
+        `;
+    });
+}
+
+function mostrarProximos() {
+    const proximos = eventos.filter(e => getEstado(e.fecha) === "Próximo");
+    renderEventos(proximos, "Eventos Próximos");
+}
+
+function mostrarTodos() {
+    renderEventos(eventos, "Todos los Eventos");
+    document.getElementById("eventos-seccion").scrollIntoView({ behavior: 'smooth' });
+}
+
+// Iniciar app
+renderNav();
+mostrarProximos();
+</script>
+
+</body>
+</html>
+
