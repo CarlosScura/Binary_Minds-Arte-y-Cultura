@@ -54,7 +54,7 @@ def create_app():
 
 # REGISTRAR blueprint eventos con prefijo "/eventos"
 
-    app.register_blueprint(eventos_bp,  url_prefix='/eventos')
+    app.register_blueprint(eventos_bp,  url_prefix='')
 
 # REGISTRAR blueprint usuarios con prefijo "/usuarios"
 
