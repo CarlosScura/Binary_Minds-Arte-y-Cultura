@@ -29,7 +29,7 @@ class Usuario(db.Model):
     email               = db.Column(db.String(120), nullable=False, unique=True)
     contraseña          = db.Column(db.String(256), nullable=False)
     puntuacion_promedio = db.Column(db.Float, default=0.0)
-    fecha_creacion      = db.Column(db.DateTime, datetime.now(timezone.utc))
+    fecha_creacion      = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
     # --- AGREGAR ESTOS MÉTODOS O TU AUTH NO FUNCIONARÁ ---
     def set_password(self, password):
