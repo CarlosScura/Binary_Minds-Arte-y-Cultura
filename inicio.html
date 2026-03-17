@@ -1,146 +1,37 @@
-<!--#================================
-# inicio.html
-# ================================
-HEREDA de base.html
+{% extends 'base.html' %}
+{% block content %}
 
-SECCIÓN HERO:
-  - Título principal de la app
-  - Descripción breve de qué es la plataforma
-  - Botón "Ver todos los eventos"
-
-SECCIÓN EVENTOS PRÓXIMOS:
-  PARA cada evento en la lista (solo estado "proximo"):
-    MOSTRAR tarjeta con:
-      - Título del evento
-      - Fecha
-      - Ubicación texto
-      - Botón "Ver detalle" → link a evento_detalle.html
-
-  SI no hay eventos próximos:
-    MOSTRAR mensaje "No hay eventos próximos por ahora"
-
-# ================================
-# eventos_lista.html
-# ================================
-HEREDA de base.html
-
-SECCIÓN FILTROS:
-  - Botón "Próximos"
-  - Botón "Pasados"
-  - Botón "Cancelados"
-  - El botón activo se ve resaltado
-
-SECCIÓN LISTA:
-  PARA cada evento filtrado:
-    MOSTRAR tarjeta con:
-      - Título
-      - Fecha
-      - Estado (con color diferente según estado)
-      - Botón "Ver detalle"
-
-  SI no hay eventos:
-    MOSTRAR mensaje según el filtro activo
-
-# ================================
-# evento_detalle.html
-# ================================
-HEREDA de base.html
-
-SECCIÓN DETALLE:
-  - Título del evento
-  - Estado del evento (con color)
-  - Fecha y hora
-  - Descripción completa
-  - Ubicación texto
-  - Embed de Google Maps (mostrar el iframe recibido desde backend)
-  - Nombre del creador → link a su perfil
-
-SECCIÓN ARTISTAS / PARTICIPANTES:
-  - Título "Creado por:"
-  - Nombre del creador con link a perfil
-
-SECCIÓN CALIFICAR:
-  SI hay sesión activa Y estado del evento == "pasado":
-    - Mostrar botón "Calificar al organizador"
-    → link a formulario de calificación
-
-  SI no hay sesión:
-    - Mostrar "Iniciá sesión para calificar"
-
-# ================================
-# perfil_usuario.html
-# ================================
-HEREDA de base.html
-
-SECCIÓN PERFIL:
-  - Nombre del usuario
-  - Puntuación promedio con estrellas ⭐
-  - Fecha de registro
-
-SECCIÓN EVENTOS CREADOS:
-  PARA cada evento creado por este usuario:
-    MOSTRAR tarjeta con:
-      - Título
-      - Fecha
-      - Estado
-      - Link a detalle
-
-  SI no creó eventos:
-    MOSTRAR "Este usuario no ha creado eventos aún"-->
-<section class="bg-black text-white py-20 text-center">
-    <!-- Título principal -->
+<section class="text-white py-20 text-center">
     <h1 class="text-5xl font-bold mb-4">Arte y Cultura Paraguay</h1>
-    
-    <!-- Descripción breve -->
     <p class="text-xl mb-6">
         Descubrí y compartí eventos de arte y cultura en todo Paraguay.
         Conectamos artistas, organizadores y amantes de la cultura en un solo lugar.
     </p>
-
-    <!-- Botón -->
-    <a href="{{ url_for('eventos_lista') }}" class="bg-yellow-500 text-black font-bold py-2 px-6 rounded hover:bg-yellow-600 transition-colors">
+    <a href="{{ url_for('eventos.obtener_eventos') }}" 
+       class="bg-yellow-500 text-black font-bold py-2 px-6 rounded hover:bg-yellow-600 transition-colors">
         Ver todos los eventos
     </a>
-<section class="eventos-filtrados py-12 bg-gray-900 text-white">
-    <h2 class="text-3xl font-bold text-center mb-8">Eventos</h2>
+</section>
+<section class="py-12">
+    <h2 class="text-3xl font-bold text-center mb-8 text-white">Eventos Próximos</h2>
 
     <div class="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
         {% if eventos %}
             {% for evento in eventos %}
-                <div class="bg-gray-800 p-6 rounded shadow hover:shadow-lg transition-shadow">
-                    <!-- Título -->
-                    <h3 class="text-xl font-bold mb-2">{{ evento.titulo }}</h3>
-
-                    <!-- Fecha -->
-                    <p class="mb-1">📅 {{ evento.fecha }}</p>
-
-                    <!-- Estado con color -->
-                    <p class="mb-3">
-                        Estado: 
-                        <span class="{% if evento.estado=='proximo' %}text-green-500{% elif evento.estado=='pasado' %}text-gray-400{% elif evento.estado=='cancelado' %}text-red-500{% endif %}">
-                            {{ evento.estado|capitalize }}
-                        </span>
-                    </p>
-
-                    <!-- Botón Ver detalle -->
-                    <a href="{{ url_for('evento_detalle', id=evento.id) }}" class="bg-yellow-500 text-black px-3 py-2 rounded hover:bg-yellow-600 transition-colors">
+                <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 hover:border-blue-500 transition">
+                    <h3 class="text-xl font-bold mb-2 text-white">{{ evento.titulo }}</h3>
+                    <p class="text-gray-400 text-sm">📅 {{ evento.fecha_evento }}</p>
+                    <p class="text-gray-400 text-sm mb-4">📍 {{ evento.ubicacion_texto }}</p>
+                    <a href="{{ url_for('eventos.obtener_evento', id=evento.id) }}" 
+                       class="bg-yellow-500 text-black px-3 py-2 rounded hover:bg-yellow-600 transition-colors">
                         Ver detalle
                     </a>
                 </div>
             {% endfor %}
         {% else %}
-            <!-- Mensaje si no hay eventos según filtro -->
-            <p class="col-span-3 text-center text-gray-400">
-                {% if filtro=='proximo' %}
-                    No hay eventos próximos por ahora.
-                {% elif filtro=='pasado' %}
-                    No hay eventos pasados.
-                {% elif filtro=='cancelado' %}
-                    No hay eventos cancelados.
-                {% else %}
-                    No hay eventos para mostrar.
-                {% endif %}
-            </p>
+            <p class="col-span-3 text-center text-gray-400">No hay eventos próximos por ahora.</p>
         {% endif %}
     </div>
 </section>
+
+{% endblock %}

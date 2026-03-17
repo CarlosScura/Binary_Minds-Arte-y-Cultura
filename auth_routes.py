@@ -12,7 +12,7 @@ auth_bp = Blueprint('auth', __name__)
 def mostrar_registro():
     # SI hay sesión activa → redirigir a inicio
     if 'usuario_id' in session:
-        return redirect(url_for('inicio')) # Asumiendo que la ruta principal se llama 'inicio'
+        return redirect(url_for('eventos.inicio')) # Asumiendo que la ruta principal se llama 'inicio'
     
     # DEVOLVER página de registro
     return render_template('registro.html')
@@ -54,7 +54,7 @@ def registrar():
 def mostrar_login():
     # SI hay sesión activa → redirigir a inicio
     if 'usuario_id' in session:
-        return redirect(url_for('inicio'))
+        return redirect(url_for('eventos.inicio'))
     
     return render_template('login.html')
 
@@ -78,7 +78,7 @@ def login():
     session["usuario_nombre"] = usuario.nombre
 
     flash(f'¡Hola de nuevo, {usuario.nombre}!', 'success')
-    return redirect(url_for('inicio')) # Todos van al mismo lugar
+    return redirect(url_for('eventos.inicio')) # Todos van al mismo lugar
 
 # ================================
 # POST /logout
@@ -88,7 +88,7 @@ def logout():
     # LIMPIAR toda la sesión
     session.clear()
     flash('Has cerrado sesión correctamente', 'info')
-    return redirect(url_for('inicio'))
+    return redirect(url_for('eventos.inicio'))
 
 def login_requerido(f):
     @wraps(f)
