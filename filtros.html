@@ -1,0 +1,152 @@
+<!--#================================
+# inicio.html
+# ================================
+HEREDA de base.html
+
+SECCIÓN HERO:
+  - Título principal de la app 
+  - Descripción breve de qué es la plataforma
+  - Botón "Ver todos los eventos"
+
+SECCIÓN EVENTOS PRÓXIMOS:
+  PARA cada evento en la lista (solo estado "proximo"):
+    MOSTRAR tarjeta con:
+      - Título del evento
+      - Fecha
+      - Ubicación texto
+      - Botón "Ver detalle" → link a evento_detalle.html
+
+  SI no hay eventos próximos:
+    MOSTRAR mensaje "No hay eventos próximos por ahora"
+
+# ================================
+# eventos_lista.html
+# ================================
+HEREDA de base.html
+
+SECCIÓN FILTROS:
+  - Botón "Próximos"
+  - Botón "Pasados"
+  - Botón "Cancelados"
+  - El botón activo se ve resaltado
+
+SECCIÓN LISTA:
+  PARA cada evento filtrado:
+    MOSTRAR tarjeta con:
+      - Título
+      - Fecha
+      - Estado (con color diferente según estado)
+      - Botón "Ver detalle"
+
+  SI no hay eventos:
+    MOSTRAR mensaje según el filtro activo
+
+# ================================
+# evento_detalle.html
+# ================================
+HEREDA de base.html
+
+SECCIÓN DETALLE:
+  - Título del evento
+  - Estado del evento (con color)
+  - Fecha y hora
+  - Descripción completa
+  - Ubicación texto
+  - Embed de Google Maps (mostrar el iframe recibido desde backend)
+  - Nombre del creador → link a su perfil
+
+SECCIÓN ARTISTAS / PARTICIPANTES:
+  - Título "Creado por:"
+  - Nombre del creador con link a perfil
+
+SECCIÓN CALIFICAR:
+  SI hay sesión activa Y estado del evento == "pasado":
+    - Mostrar botón "Calificar al organizador"
+    → link a formulario de calificación
+
+  SI no hay sesión:
+    - Mostrar "Iniciá sesión para calificar"
+
+# ================================
+# perfil_usuario.html
+# ================================
+HEREDA de base.html
+
+SECCIÓN PERFIL:
+  - Nombre del usuario
+  - Puntuación promedio con estrellas ⭐
+  - Fecha de registro
+
+SECCIÓN EVENTOS CREADOS:
+  PARA cada evento creado por este usuario:
+    MOSTRAR tarjeta con:
+      - Título
+      - Fecha
+      - Estado
+      - Link a detalle
+
+  SI no creó eventos:
+    MOSTRAR "Este usuario no ha creado eventos aún"-->
+    <!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arte y Cultura Paraguay</title>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<style>
+  body {
+    background-image: url(imagDisenio/background.jpg);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+  .bg-overlay { background-color: rgba(0,0,0,0.8); }
+</style>
+</head>
+<body class="text-white">
+
+<nav class="bg-overlay p-4 flex justify-between items-center sticky top-0 z-50">
+  <div class="flex items-center gap-2">
+    <div class="bg-white text-black w-10 h-10 flex items-center justify-center rounded-full overflow-hidden">
+        <img src="imagDisenio/logo-cultura.jpg" alt="logo" class="object-cover h-full w-full">
+    </div>
+    <span class="font-bold text-lg">Arte y Cultura Paraguay</span>
+  </div>
+  <div id="nav"></div>
+</nav>
+
+<section class="bg-overlay p-10 rounded mb-6 text-center mx-4 mt-4">
+  <h1 class="text-4xl font-bold mb-2">Arte y Cultura Paraguay</h1>
+  <p class="text-gray-300 mb-4"> Conectamos Artistas y Eventos Culturales de Todo Paraguay.</p>
+  <button onclick="filtrar('Próximo')" class="bg-blue-500 px-6 py-2 rounded text-black font-bold hover:bg-blue-400 transition">Ver todos los eventos</button>
+</section>
+
+<section id="eventos-seccion" class="p-6 bg-overlay rounded mx-4 shadow-2xl">
+  
+  <div class="flex flex-wrap justify-center gap-4 mb-8">
+    <button onclick="filtrar('Próximo')" id="btn-proximo" class="filter-btn px-6 py-2 rounded-full border border-blue-500 transition font-bold">Próximos</button>
+    <button onclick="filtrar('Pasado')" id="btn-pasado" class="filter-btn px-6 py-2 rounded-full border border-blue-500 transition font-bold">Pasados</button>
+    <button onclick="filtrar('Cancelado')" id="btn-cancelado" class="filter-btn px-6 py-2 rounded-full border border-blue-500 transition font-bold">Cancelados</button>
+  </div>
+
+  <h2 id="titulo-lista" class="text-2xl font-bold mb-6 border-b border-gray-700 pb-2">Eventos</h2>
+  
+  <div id="contenedor-eventos" class="grid md:grid-cols-3 gap-6">
+    </div>
+</section>
+
+<footer class="bg-overlay text-center p-6 mt-10 text-gray-400 rounded mx-4">
+  <p class="font-bold text-white">Arte y Cultura Paraguay</p>
+  <p>© 2026 - Conectando el arte y la cultura en Paraguay</p>
+</footer>
+
+<script>
+// ================= NAV =================
+function renderNav(){
+  let nav = document.getElementById("nav");
+  let user = localStorage.getItem("usuario");
+  nav.innerHTML = user ? `
+    <span class="mr-2 italic">Hola, ${user}</span>
+    <button onclick="logout()" class="bg
