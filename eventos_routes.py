@@ -1,6 +1,6 @@
 # IMPORTAR Flask (Blueprint, request, session, redirect)
 
-from flask import Blueprint, request, session, redirect, url_for, jsonify, abort
+from flask import Blueprint, request, session, redirect, url_for, jsonify, abort, render_template
 
 # IMPORTAR modelos (Evento, Usuario)
 
@@ -26,7 +26,12 @@ eventos_bp = Blueprint('eventos', __name__)
   
 #   DEVOLVER lista de eventos
 
-@eventos_bp.route('/eventos', methods=['GET'])
+@eventos_bp.route('/')
+def inicio():
+    eventos = Evento.query.filter_by(estado='proximo').all()
+    return render_template('inicio.html', eventos=eventos)
+
+@eventos_bp.route('/', methods=['GET'])
 def obtener_eventos():
     filtro = request.args.get('estado')
 
@@ -46,7 +51,7 @@ def obtener_eventos():
 #   SI no existe → error 404
 #   DEVOLVER detalle del evento (incluye embed_mapa)
 
-@eventos_bp.route('/eventos/<int:id>', methods=['GET'])
+@eventos_bp.route('/<int:id>', methods=['GET'])
 def obtener_evento(id):
     evento = Evento.query.get_or_404(id)
     return jsonify(evento.to_dict())
@@ -68,7 +73,13 @@ def obtener_evento(id):
 #   GUARDAR en base de datos
 #   REDIRIGIR al detalle del evento creado
 
-@eventos_bp.route('/eventos/crear', methods=['POST'])
+@eventos_bp.route('/crear', methods=['GET'])
+def mostrar_crear_evento():
+    if 'usuario_id' not in session:
+        return redirect(url_for('auth.mostrar_login'))
+    return render_template('crear_evento.html')
+
+@eventos_bp.route('/crear', methods=['POST'])
 def crear_evento():
     if 'usuario_id' not in session:
         return redirect(url_for('auth.login'))
@@ -79,7 +90,7 @@ def crear_evento():
     ubicacion_texto  = request.form.get('ubicacion_texto')
     embed_mapa       = request.form.get('embed_mapa')
 
-    fecha_evento     = datetime.fromisoformat(fecha_evento_str)
+    fecha_evento     = datetime.fromisoformat(fecha_evento_str).replace(tzinfo=timezone.utc)
     fecha_expiracion = fecha_evento + timedelta(days=90)
 
     nuevo_evento = Evento(
@@ -111,7 +122,7 @@ def crear_evento():
 #   GUARDAR cambios
 #   REDIRIGIR a lista de eventos
 
-@eventos_bp.route('/eventos/<int:id>/cancelar', methods=['POST'])
+@eventos_bp.route('/<int:id>/cancelar', methods=['POST'])
 def cancelar_evento(id):
     if 'usuario_id' not in session:
         return redirect(url_for('auth.login'))
