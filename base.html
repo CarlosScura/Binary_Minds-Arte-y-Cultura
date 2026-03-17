@@ -1,28 +1,185 @@
-# ================================
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arte y Cultura Py</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Estilos propios -->
+  <link rel="stylesheet" href="enlace">
+<style>
+  body {
+    margin: 0;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+
+    background-image: url('imgDisenio/background4.gif');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    filter: blur(2px) brightness(0.6);
+    z-index: -1;
+  }
+</style>
+
+  <style>
+    @keyframes scroll-vertical {
+      0% {
+        transform: translateY(100%);
+      }
+
+      100% {
+        transform: translateY(-100%);
+      }
+    }
+
+    .animate-scroll-vertical {
+      animation: scroll-vertical 10s linear infinite;
+    }
+  </style>
+</head>
+
+<body class="flex flex-col min-h-screen">
+
+  <nav class="box-decoration-clone bg-linear-to-r from-red-600/20 to-blue-500/20 backdrop-blur-md shadow-md sticky top-0 z-50 px-2">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+
+      <!-- Logo -->
+      <a href="{{ url_for('home') }}" title="Sitio web Cultural de Arts y eventos del Paraguay"
+        class="flex items-center">
+        <img src="imgDisenio/logo_compacto.png" alt="Logo" class="h-16 w-auto">
+      </a>
+
+      <!-- Menú -->
+      <div class="flex items-center space-x-3 text-shadow: var(--text-shadow-md)">
+
+        {% if user %}
+
+        <!-- Bienvenida -->
+        <span class="text-white hidden md:flex items-center gap-2 text-shadow: var(--text-shadow-md)">
+          <i class="fa-solid fa-handshake fa-bounce"></i>
+          Bienvenido, {{ user.name }}
+        </span>
+
+        <!-- Mi perfil -->
+        <a href="{{ url_for('profile') }}" 
+          class="box-shadow: var(--shadow-lg) flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 text-shadow: var(--text-shadow-md) rounded-full transition duration-200 "
+          title="Mi perfil ">
+          <i class="fa-solid fa-circle-user"></i>
+          <span class="hidden sm:inline">Mi perfil</span>
+        </a>
+
+        <!-- Crear evento -->
+        <a href="{{ url_for('create_event') }}"
+          class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-shadow: var(--text-shadow-md)px-3 py-2 rounded-full transition duration-200"
+          title="Crear evento">
+          <i class="fa-regular fa-calendar-days"></i>
+          <span class="hidden sm:inline">Crear evento</span>
+        </a>
+
+        <!-- Cerrar sesión -->
+        <a href="{{ url_for('logout') }}"
+          class="flex items-center text-shadow: var(--text-shadow-md) gap-2 bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-full transition duration-200"
+          title="Cerrar sesión">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          <span class="hidden sm:inline">Cerrar sesión</span>
+        </a>
+
+        {% else %}
+
+        <!-- Registrarse -->
+        <a href="{{ url_for('register') }}"
+          class="flex items-center  text-shadow: var(--text-shadow-md) gap-2 bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-full transition duration-200"
+          title="Registrarse">
+          <i class="fa-solid fa-user-plus"></i>
+          <span class="hidden sm:inline">Registrarse</span>
+        </a>
+
+        <!-- Entrar -->
+        <a href="{{ url_for('login') }}"
+          class="flex items-center text-shadow: var(--text-shadow-md) gap-2 bg-yellow-500 hover:bg-yellow-600 text-black px-3 py-2 rounded-full transition duration-200"
+          title="Iniciar sesión">
+          <i class="fa-solid fa-arrow-right-to-bracket"></i>
+          <span class="hidden sm:inline">Entrar</span>
+        </a>
+
+        {% endif %}
+
+      </div>
+
+    </div>
+  </nav>
+
+
+  <!-- ==================== CONTENIDO PRINCIPAL ==================== -->
+  <main class="container mx-auto px-4 py-6 flex-1">
+
+    {% block content %}
+    <!-- Cada página rellena este bloque -->
+    {% endblock %}
+  </main>
+
+  <!-- ==================== PIE DE PÁGINA ==================== -->
+  <footer class="bg-gray-800/50 backdrop-blur-md shadow-md sticky top-0 z-50 text-white drop-shadow-lg py-1 mt-8">
+    <div class="container mx-auto px-4 text-center text-sm sm:text-base">
+
+      <p class="font-bold text-base sm:text-lg">Arte y Cultura Paraguay</p>
+      <p>© Conectando arte y cultura en Paraguay</p>
+      <p class="mb-2"><i class="fa-solid fa-brain"></i> Binary Minds</p>
+
+      <!-- Contenedor de animación -->
+      <div class="overflow-hidden h-16 relative">
+        <div class="animate-scroll-vertical space-y-1">
+          <p>Carlos Balbuena</p>
+          <p>R Daniel Molinas</p>
+          <p>Matias Falcon</p>
+          <p>Carlos Alarcon</p>
+          <p>Emilio C</p>
+          <p>Nauhel</p>
+          <p>Tián</p>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+</body>
+
+</html>
+<!--# ================================
 # base.html
 # ================================
 ESTRUCTURA HTML base que todas las páginas heredan
 
 CABECERA (head):
   - Título de la página (cada página lo personaliza)
-  - Importar Tailwind CSS
-  - Importar estilos propios si los hay
+  - Importar Tailwind CSS ✅
+  - Importar estilos propios si los hay✅
 
 BARRA DE NAVEGACIÓN (navbar):
-  - Logo / nombre de la app → link a inicio
+  - Logo / nombre de la app → link a inicio ✅
 
   SI hay sesión activa:
-    - Mostrar nombre del usuario
-    - Link a "Mi perfil"
-    - Link a "Crear evento"
-    - Botón "Cerrar sesión"
+    - Mostrar nombre del usuario✅
+    - Link a "Mi perfil"✅
+    - Link a "Crear evento"✅
+    - Botón "Cerrar sesión" ✅
   SI NO hay sesión:
-    - Botón "Registrarse"
-    - Botón "Entrar"
+    - Botón "Registrarse" ✅
+    - Botón "Entrar" ✅
 
 CONTENIDO PRINCIPAL:
   - Bloque vacío que cada página rellena con su contenido
 
 PIE DE PÁGINA (footer):
-  - Nombre de la app
-  - Texto breve (ej: "Conectando arte y cultura en Paraguay")
+  - Nombre de la app✅
+  - Texto breve (ej: "Conectando arte y cultura en Paraguay")✅-->
