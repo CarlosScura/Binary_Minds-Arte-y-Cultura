@@ -1,48 +1,74 @@
-# ================================
-# RESPONSABILIDAD DEL ROL INTEGRACIÓN
-# ================================
-# Este rol no crea archivos nuevos.
-# Su trabajo es verificar que el frontend
-# y el backend se comunican correctamente.
+from app import app, db
+from models import Usuario, Evento
+from datetime import datetime, timedelta, timezone
 
-# ================================
-# CHECKLIST DE CONEXIONES A VERIFICAR
-# ================================
+with app.app_context():
+    ahora = datetime.now(timezone.utc)
 
-CONEXIÓN 1: Registro y Login
-  VERIFICAR que registro.html envía a → POST /registro
-  VERIFICAR que login.html envía a → POST /login
-  VERIFICAR que después del login redirige a inicio.html
-  VERIFICAR que el navbar muestra el nombre del usuario logueado
+    # Buscar usuarios existentes
+    usuario1 = Usuario.query.filter_by(email='juan@correo.com').first()
+    usuario2 = Usuario.query.filter_by(email='maria@correo.com').first()
+    usuario3 = Usuario.query.filter_by(email='carlos@correo.com').first()
 
-CONEXIÓN 2: Eventos
-  VERIFICAR que inicio.html recibe y muestra la lista de eventos
-  VERIFICAR que eventos_lista.html filtra correctamente por estado
-  VERIFICAR que evento_detalle.html recibe el embed_mapa y lo renderiza
-  VERIFICAR que crear_evento.html envía a → POST /eventos/crear
-  VERIFICAR que cancelar evento funciona y actualiza el estado visible
+    # NUEVOS PRÓXIMOS
+    evento_nuevo1 = Evento(
+        titulo='Exposición de Arte Contemporáneo',
+        descripcion='Muestra de obras de artistas emergentes paraguayos.',
+        fecha_evento=ahora + timedelta(days=7),
+        fecha_expiracion=ahora + timedelta(days=7+90),
+        ubicacion_texto='Centro Cultural de la República, Asunción',
+        embed_mapa='',
+        estado='proximo',
+        creador_id=usuario1.id
+    )
 
-CONEXIÓN 3: Perfiles y Calificaciones
-  VERIFICAR que perfil_usuario.html muestra la puntuacion_promedio actualizada
-  VERIFICAR que calificar.html envía a → POST /calificar
-  VERIFICAR que no aparece el botón calificar si el evento no es "pasado"
-  VERIFICAR que no aparece el botón calificar si no hay sesión activa
+    evento_nuevo2 = Evento(
+        titulo='Galería Abierta: Arte Urbano',
+        descripcion='Intervenciones artísticas en espacios públicos.',
+        fecha_evento=ahora + timedelta(days=14),
+        fecha_expiracion=ahora + timedelta(days=14+90),
+        ubicacion_texto='Calle Palma, Asunción',
+        embed_mapa='',
+        estado='proximo',
+        creador_id=usuario2.id
+    )
 
-CONEXIÓN 4: Seguridad básica
-  VERIFICAR que rutas protegidas redirigen a login si no hay sesión
-  VERIFICAR que un usuario no puede cancelar un evento que no creó
+    evento_nuevo3 = Evento(
+        titulo='Festival de Música Folclórica',
+        descripcion='Una noche de música tradicional paraguaya.',
+        fecha_evento=ahora + timedelta(days=21),
+        fecha_expiracion=ahora + timedelta(days=21+90),
+        ubicacion_texto='Teatro Municipal, Asunción',
+        embed_mapa='',
+        estado='proximo',
+        creador_id=usuario3.id
+    )
 
-# ================================
-# DATOS DE PRUEBA
-# ================================
-CREAR script poblar_db.py:
+    # NUEVO PASADO
+    evento_nuevo4 = Evento(
+        titulo='Feria de Artesanías',
+        descripcion='Exposición y venta de artesanías tradicionales.',
+        fecha_evento=ahora - timedelta(days=5),
+        fecha_expiracion=ahora - timedelta(days=5) + timedelta(days=90),
+        ubicacion_texto='Plaza Uruguaya, Asunción',
+        embed_mapa='',
+        estado='pasado',
+        creador_id=usuario1.id
+    )
 
-  CREAR 3 usuarios de prueba con contraseñas conocidas
-  CREAR 3 eventos:
-    - uno con estado "proximo"
-    - uno con estado "pasado"
-    - uno con estado "cancelado"
-  CREAR 2 calificaciones de prueba
+    # NUEVO CANCELADO
+    evento_nuevo5 = Evento(
+        titulo='Taller de Pintura en Acuarela',
+        descripcion='Aprende técnicas básicas y avanzadas de acuarela.',
+        fecha_evento=ahora + timedelta(days=3),
+        fecha_expiracion=ahora + timedelta(days=3+90),
+        ubicacion_texto='Centro Cultural Paraguayo Japonés, Asunción',
+        embed_mapa='',
+        estado='cancelado',
+        creador_id=usuario2.id
+    )
 
-  → Estos datos sirven para que todos puedan
-    probar su parte sin depender de los demás
+    db.session.add_all([evento_nuevo1, evento_nuevo2, evento_nuevo3, evento_nuevo4, evento_nuevo5])
+    db.session.commit()
+
+    print('Eventos nuevos agregados correctamente!')

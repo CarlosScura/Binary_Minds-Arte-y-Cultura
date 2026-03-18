@@ -1,9 +1,8 @@
 # IMPORTAR Flask (Blueprint, request, session, redirect)
 # IMPORTAR modelos (Usuario, Calificacion)
 
-from flask import Blueprint, request, session, redirect, url_for, jsonify
-from models import Usuario, Calificacion, Evento
-from models import db
+from flask import Blueprint, request, session, redirect, url_for, jsonify, render_template
+from models import Usuario, Calificacion, Evento, db
 
 # CREAR blueprint "usuarios"
 
@@ -17,7 +16,7 @@ usuarios_bp = Blueprint('usuarios', __name__)
 #   BUSCAR todos los usuarios
 #   DEVOLVER lista con nombre y puntuacion_promedio
 
-@usuarios_bp.route('/usuarios', methods=['GET'])
+@usuarios_bp.route('/', methods=['GET'])
 def obtener_usuarios():
     usuarios = Usuario.query.all()
 
@@ -46,35 +45,12 @@ def obtener_perfil(id):
     usuario = Usuario.query.get_or_404(id)
 
     # Eventos que creó este usuario
-    eventos = Evento.query.filter_by(creador_id=id).all()
+    #eventos = Evento.query.filter_by(creador_id=id).all()
 
     # Calificaciones que recibió este usuario
-    calificaciones = Calificacion.query.filter_by(evaluado_id=id).all()
+    #calificaciones = Calificacion.query.filter_by(evaluado_id=id).all()
 
-    return jsonify({
-        'id':                   usuario.id,
-        'nombre':               usuario.nombre,
-        'email':                usuario.email,
-        'puntuacion_promedio':  usuario.puntuacion_promedio,
-        'fecha_creacion':       usuario.fecha_creacion.isoformat(),
-        'eventos': [
-            {
-                'id':           e.id,
-                'titulo':       e.titulo,
-                'fecha_evento': e.fecha_evento.isoformat(),
-                'estado':       e.estado
-            }
-            for e in eventos
-        ],
-        'calificaciones_recibidas': [
-            {
-                'puntuacion':   c.puntuacion,
-                'evaluador_id': c.evaluador_id,
-                'evento_id':    c.evento_id
-            }
-            for c in calificaciones
-        ]
-    }), 200
+    return render_template('perfil_usuario.html', usuario=usuario)
 
 # ================================
 # POST /calificar
@@ -110,7 +86,7 @@ def calificar():
     # Verificar sesión activa
 
     if 'usuario_id' not in session:
-        return redirect(url_for('auth.login'))  # ← coordiná el nombre con el módulo Auth
+        return redirect(url_for('auth.mostrar_login'))  # ← coordiná el nombre con el módulo Auth
 
     # Recibir datos del formulario HTML
 

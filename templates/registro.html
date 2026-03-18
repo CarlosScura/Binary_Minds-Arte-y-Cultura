@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-md mx-auto mt-10 p-6 bg-gray-800 rounded-xl">
+    <h2 class="text-2xl font-bold mb-6 text-white">Crear Cuenta</h2>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}" style="color: red;">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form action="{{ url_for('auth.registrar') }}" method="POST">
+        <div class="mb-4">
+            <label class="block text-gray-300 mb-1" for="nombre">Nombre Completo:</label>
+            <input type="text" name="nombre" id="nombre" required
+            class="w-full bg-gray-700 text-white px-3 py-2 rounded">
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-gray-300 mb-1" for="email">Correo Electrónico:</label>
+            <input type="email" name="email" id="email" required 
+            class="w-full bg-gray-700 text-white px-3 py-2 rounded">
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-gray-300 mb-1" for="password">Contraseña:</label> 
+            <input type="password" name="password" id="password" required 
+            class="w-full bg-gray-700 text-white px-3 py-2 rounded">
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-gray-300 mb-1" for="confirm_password">Repetir Contraseña:</label>
+            <input type="password" name="confirm_password" id="confirm_password" required 
+            class="w-full bg-gray-700 text-white px-3 py-2 rounded">
+        </div>
+        
+        <div class="mb-4">
+            <button type="submit"
+            class="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 rounded">
+            Registrarse
+        </button>
+        </div>
+    </form>
+
+    <p class="text-gray-400 mt-4">¿Ya tenés cuenta? <a href="{{ url_for('auth.mostrar_login') }}" class="text-yellow-400">Entrá acá</a></p>
+</div>
+{% endblock %}

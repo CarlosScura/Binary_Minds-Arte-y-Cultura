@@ -9,26 +9,23 @@
   <!-- Tailwind CSS -->
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <!-- Estilos propios -->
-  <link rel="stylesheet" href="enlace">
 <style>
   body {
-    margin: 0;
-  }
+  margin: 0;
+  background-image: url("{{ url_for('static', filename='background5.webp') }}");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed; /* ← esto es el parallax */
+  background-repeat: no-repeat;
+}
 
-  body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-
-    background-image: url('imgDisenio/background4.gif');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-
-    filter: blur(2px) brightness(0.6);
-    z-index: -1;
-  }
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4); /* oscurece la imagen */
+  z-index: -1;
+}
 </style>
 
   <style>
@@ -54,41 +51,41 @@
     <div class="container mx-auto px-4 py-3 flex justify-between items-center">
 
       <!-- Logo -->
-      <a href="{{ url_for('home') }}" title="Sitio web Cultural de Arts y eventos del Paraguay"
+      <a href="{{ url_for('eventos.inicio') }}" title="Sitio web Cultural de Arts y eventos del Paraguay"
         class="flex items-center">
-        <img src="imgDisenio/logo_compacto.png" alt="Logo" class="h-16 w-auto">
+        <img src="{{ url_for('static', filename='logo_compacto.png') }}" alt="Logo" class="h-16 w-auto">
       </a>
 
       <!-- Menú -->
-      <div class="flex items-center space-x-3 text-shadow: var(--text-shadow-md)">
+      <div class="flex items-center space-x-3 ">
 
-        {% if user %}
+        {% if session['usuario_id'] %}
 
         <!-- Bienvenida -->
-        <span class="text-white hidden md:flex items-center gap-2 text-shadow: var(--text-shadow-md)">
+        <span class="text-white hidden md:flex items-center gap-2 ">
           <i class="fa-solid fa-handshake fa-bounce"></i>
-          Bienvenido, {{ user.name }}
+          Bienvenido, {{ session['usuario_nombre'] }}
         </span>
 
         <!-- Mi perfil -->
-        <a href="{{ url_for('profile') }}" 
-          class="box-shadow: var(--shadow-lg) flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 text-shadow: var(--text-shadow-md) rounded-full transition duration-200 "
+        <a href="{{ url_for('usuarios.obtener_perfil', id=session['usuario_id']) }}" 
+          class="box-shadow: var(--shadow-lg) flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2  rounded-full transition duration-200 "
           title="Mi perfil ">
           <i class="fa-solid fa-circle-user"></i>
           <span class="hidden sm:inline">Mi perfil</span>
         </a>
 
         <!-- Crear evento -->
-        <a href="{{ url_for('create_event') }}"
-          class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-shadow: var(--text-shadow-md)px-3 py-2 rounded-full transition duration-200"
+        <a href="{{ url_for('eventos.mostrar_crear_evento') }}"
+          class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-full transition duration-200"
           title="Crear evento">
           <i class="fa-regular fa-calendar-days"></i>
           <span class="hidden sm:inline">Crear evento</span>
         </a>
 
         <!-- Cerrar sesión -->
-        <a href="{{ url_for('logout') }}"
-          class="flex items-center text-shadow: var(--text-shadow-md) gap-2 bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-full transition duration-200"
+        <a href="{{ url_for('auth.logout') }}"
+          class="flex items-center  gap-2 bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-full transition duration-200"
           title="Cerrar sesión">
           <i class="fa-solid fa-arrow-right-from-bracket"></i>
           <span class="hidden sm:inline">Cerrar sesión</span>
@@ -97,16 +94,16 @@
         {% else %}
 
         <!-- Registrarse -->
-        <a href="{{ url_for('register') }}"
-          class="flex items-center  text-shadow: var(--text-shadow-md) gap-2 bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-full transition duration-200"
+        <a href="{{ url_for('auth.mostrar_registro') }}"
+          class="flex items-center   gap-2 bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-full transition duration-200"
           title="Registrarse">
           <i class="fa-solid fa-user-plus"></i>
           <span class="hidden sm:inline">Registrarse</span>
         </a>
 
         <!-- Entrar -->
-        <a href="{{ url_for('login') }}"
-          class="flex items-center text-shadow: var(--text-shadow-md) gap-2 bg-yellow-500 hover:bg-yellow-600 text-black px-3 py-2 rounded-full transition duration-200"
+        <a href="{{ url_for('auth.mostrar_login') }}"
+          class="flex items-center  gap-2 bg-yellow-500 hover:bg-yellow-600 text-black px-3 py-2 rounded-full transition duration-200"
           title="Iniciar sesión">
           <i class="fa-solid fa-arrow-right-to-bracket"></i>
           <span class="hidden sm:inline">Entrar</span>
@@ -155,31 +152,3 @@
 </body>
 
 </html>
-<!--# ================================
-# base.html
-# ================================
-ESTRUCTURA HTML base que todas las páginas heredan
-
-CABECERA (head):
-  - Título de la página (cada página lo personaliza)
-  - Importar Tailwind CSS ✅
-  - Importar estilos propios si los hay✅
-
-BARRA DE NAVEGACIÓN (navbar):
-  - Logo / nombre de la app → link a inicio ✅
-
-  SI hay sesión activa:
-    - Mostrar nombre del usuario✅
-    - Link a "Mi perfil"✅
-    - Link a "Crear evento"✅
-    - Botón "Cerrar sesión" ✅
-  SI NO hay sesión:
-    - Botón "Registrarse" ✅
-    - Botón "Entrar" ✅
-
-CONTENIDO PRINCIPAL:
-  - Bloque vacío que cada página rellena con su contenido
-
-PIE DE PÁGINA (footer):
-  - Nombre de la app✅
-  - Texto breve (ej: "Conectando arte y cultura en Paraguay")✅-->
