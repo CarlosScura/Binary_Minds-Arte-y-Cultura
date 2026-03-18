@@ -1,48 +1,77 @@
-# ================================
-# RESPONSABILIDAD DEL ROL INTEGRACIÓN
-# ================================
-# Este rol no crea archivos nuevos.
-# Su trabajo es verificar que el frontend
-# y el backend se comunican correctamente.
+# poblar_db.py
+from app import app, db
+from models import Usuario, Evento, Calificacion
+from werkzeug.security import generate_password_hash
+from datetime import datetime, timedelta
 
-# ================================
-# CHECKLIST DE CONEXIONES A VERIFICAR
-# ================================
+with app.app_context():
+    # Crear usuarios de prueba
+    usuario1 = Usuario(
+        nombre='Juan Pérez',
+        email='juan@correo.com',
+        password=generate_password_hash('123456')
+    )
+    usuario2 = Usuario(
+        nombre='María Arroyo',
+        email='maria@correo.com',
+        password=generate_password_hash('123456')
+    )
+    usuario3 = Usuario(
+        nombre='Carlos López',
+        email='carlos@correo.com',
+        password=generate_password_hash('123456')
+    )
+    db.session.add_all([usuario1, usuario2, usuario3])
+    db.session.commit()
 
-CONEXIÓN 1: Registro y Login
-  VERIFICAR que registro.html envía a → POST /registro
-  VERIFICAR que login.html envía a → POST /login
-  VERIFICAR que después del login redirige a inicio.html
-  VERIFICAR que el navbar muestra el nombre del usuario logueado
+    # Crear eventos
+    ahora = datetime.now()
+    evento1 = Evento(
+        titulo='Concierto de Rock',
+        descripcion='Noche de rock con bandas Nacionales',
+        fecha=ahora + timedelta(days=10),
+        ubicacion='Teatro I. A. Pane',
+        embed_mapa='<iframe src="https://maps.google.com/..."></iframe>',
+        estado='proximo',
+        creador_id=usuario1.id
+    )
+    evento2 = Evento(
+        titulo='Feria de Artesanías',
+        descripcion='Exposición y venta de artesanías',
+        fecha=ahora - timedelta(days=5),
+        ubicacion='Plaza Uruguaya',
+        embed_mapa='',
+        estado='pasado',
+        creador_id=usuario2.id
+    )
+    evento3 = Evento(
+        titulo='Taller de Pintura',
+        descripcion='Aprende técnicas de acuarela',
+        fecha=ahora + timedelta(days=20),
+        ubicacion='Centro Cultural Paraguayo Japones',
+        embed_mapa='',
+        estado='cancelado',
+        creador_id=usuario3.id
+    )
+    db.session.add_all([evento1, evento2, evento3])
+    db.session.commit()
 
-CONEXIÓN 2: Eventos
-  VERIFICAR que inicio.html recibe y muestra la lista de eventos
-  VERIFICAR que eventos_lista.html filtra correctamente por estado
-  VERIFICAR que evento_detalle.html recibe el embed_mapa y lo renderiza
-  VERIFICAR que crear_evento.html envía a → POST /eventos/crear
-  VERIFICAR que cancelar evento funciona y actualiza el estado visible
+    # Crear calificaciones de prueba (para el evento pasado)
+    calif1 = Calificacion(
+        puntuacion=4.5,
+        comentario='Muy buen organizador',
+        usuario_id=usuario2.id,  # evaluado (creador del evento2)
+        calificador_id=usuario1.id,
+        evento_id=evento2.id
+    )
+    calif2 = Calificacion(
+        puntuacion=5,
+        comentario='Excelente evento',
+        usuario_id=usuario2.id,
+        calificador_id=usuario3.id,
+        evento_id=evento2.id
+    )
+    db.session.add_all([calif1, calif2])
+    db.session.commit()
 
-CONEXIÓN 3: Perfiles y Calificaciones
-  VERIFICAR que perfil_usuario.html muestra la puntuacion_promedio actualizada
-  VERIFICAR que calificar.html envía a → POST /calificar
-  VERIFICAR que no aparece el botón calificar si el evento no es "pasado"
-  VERIFICAR que no aparece el botón calificar si no hay sesión activa
-
-CONEXIÓN 4: Seguridad básica
-  VERIFICAR que rutas protegidas redirigen a login si no hay sesión
-  VERIFICAR que un usuario no puede cancelar un evento que no creó
-
-# ================================
-# DATOS DE PRUEBA
-# ================================
-CREAR script poblar_db.py:
-
-  CREAR 3 usuarios de prueba con contraseñas conocidas
-  CREAR 3 eventos:
-    - uno con estado "proximo"
-    - uno con estado "pasado"
-    - uno con estado "cancelado"
-  CREAR 2 calificaciones de prueba
-
-  → Estos datos sirven para que todos puedan
-    probar su parte sin depender de los demás
+    print('Gracias Por Elegirnos¡.')
